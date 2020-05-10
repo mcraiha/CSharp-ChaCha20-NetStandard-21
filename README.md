@@ -2,7 +2,7 @@
 Managed .Net Standard 2.1 compatible [ChaCha20](https://en.wikipedia.org/wiki/Salsa20#ChaCha_variant) cipher written in C#
 
 ## Build status
-Not yet
+![](https://github.com/mcraiha/CSharp-ChaCha20-NetStandard-21/workflows/.NET%20Core/badge.svg)
 
 ## Why?
 Because I had some extra time
