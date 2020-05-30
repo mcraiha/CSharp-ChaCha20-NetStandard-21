@@ -404,8 +404,7 @@ namespace CSChaCha20_NS21
 			uint[] x = new uint[stateLength];    // Working buffer
 			Span<byte> tmp = stackalloc byte[processBytesAtTime];  // Temporary buffer
 			tmp.Clear(); // // To be safe
-			int outputOffset = 0;
-			int inputOffset = 0;
+			int offset = 0;
 
 			while (numBytes > 0) 
 			{
@@ -442,7 +441,7 @@ namespace CSChaCha20_NS21
 				{
 					for (int i = 0; i < numBytes; i++) 
 					{
-						output[i + outputOffset] = (byte) (input[i + inputOffset] ^ tmp[i]);
+						output[i + offset] = (byte) (input[i + offset] ^ tmp[i]);
 					}
 
 					return;
@@ -450,12 +449,11 @@ namespace CSChaCha20_NS21
 
 				for (int i = 0; i < processBytesAtTime; i++ ) 
 				{
-					output[i + outputOffset] = (byte) (input[i + inputOffset] ^ tmp[i]);
+					output[i + offset] = (byte) (input[i + offset] ^ tmp[i]);
 				}
 
 				numBytes -= processBytesAtTime;
-				outputOffset += processBytesAtTime;
-				inputOffset += processBytesAtTime;
+				offset += processBytesAtTime;
 			}
 		}
 
