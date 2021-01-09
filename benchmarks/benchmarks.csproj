@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
-	<PackageReference Include="LibChaCha20" Version="0.9.3" />
+	<PackageReference Include="LibChaCha20" Version="0.9.5" />
   </ItemGroup>
 
   <ItemGroup>
