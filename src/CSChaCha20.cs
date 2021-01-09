@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2015, 2018 Scott Bennett
- *           (c) 2020 Kaarlo Räihä
+ *           (c) 2020-2021 Kaarlo Räihä
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -188,29 +188,26 @@ namespace CSChaCha20_NS21
 		/// <param name="input">Input stream</param>
 		public void EncryptStream(Stream output, Stream input)
 		{
-			BinaryReader reader = new BinaryReader(input);
-			BinaryWriter writer = new BinaryWriter(output);
+			int readBytes;
 
-			ReadOnlySpan<byte> bytesToEncrypt = reader.ReadBytes(processBytesAtTime);
-			Span<byte> bytesToWrite = new byte[bytesToEncrypt.Length];
+			Span<byte> inputBuffer = stackalloc byte[processBytesAtTime];
+			Span<byte> outputBuffer = stackalloc byte[processBytesAtTime];
 
-			while (bytesToEncrypt.Length > 0)
+			while ((readBytes = input.Read(inputBuffer)) > 0)
 			{
-				// Reallocate only when needed
-				if (bytesToWrite.Length != bytesToEncrypt.Length)
+				// Encrypt or decrypt
+				WorkBytes(output: outputBuffer, input: inputBuffer, numBytes: readBytes);
+
+				// Write buffer
+				if (readBytes == processBytesAtTime)
 				{
-					bytesToWrite = new byte[bytesToEncrypt.Length];
+					output.Write(outputBuffer);
 				}
-
-				// Encrypt
-				WorkBytes(output: bytesToWrite, input: bytesToEncrypt, numBytes: bytesToEncrypt.Length);
-
-				// Write
-				writer.Write(bytesToWrite);
-
-				// Read more
-				bytesToEncrypt = reader.ReadBytes(processBytesAtTime);
-			}		
+				else
+				{
+					output.Write(outputBuffer.Slice(0, readBytes));
+				}
+			}
 		}
 
 		/// <summary>
@@ -302,29 +299,26 @@ namespace CSChaCha20_NS21
 		/// <param name="input">Input stream</param>
 		public void DecryptStream(Stream output, Stream input)
 		{
-			BinaryReader reader = new BinaryReader(input);
-			BinaryWriter writer = new BinaryWriter(output);
+			int readBytes;
 
-			ReadOnlySpan<byte> bytesToDecrypt = reader.ReadBytes(processBytesAtTime);
-			Span<byte> bytesToWrite = new byte[bytesToDecrypt.Length];
+			Span<byte> inputBuffer = stackalloc byte[processBytesAtTime];
+			Span<byte> outputBuffer = stackalloc byte[processBytesAtTime];
 
-			while (bytesToDecrypt.Length > 0)
+			while ((readBytes = input.Read(inputBuffer)) > 0)
 			{
-				// Reallocate only when needed
-				if (bytesToWrite.Length != bytesToDecrypt.Length)
+				// Encrypt or decrypt
+				WorkBytes(output: outputBuffer, input: inputBuffer, numBytes: readBytes);
+
+				// Write buffer
+				if (readBytes == processBytesAtTime)
 				{
-					bytesToWrite = new byte[bytesToDecrypt.Length];
+					output.Write(outputBuffer);
 				}
-
-				// Decrypt
-				WorkBytes(output: bytesToWrite, input: bytesToDecrypt, numBytes: bytesToDecrypt.Length);
-
-				// Write
-				writer.Write(bytesToWrite);
-
-				// Read more
-				bytesToDecrypt = reader.ReadBytes(processBytesAtTime);
-			}		
+				else
+				{
+					output.Write(outputBuffer.Slice(0, readBytes));
+				}
+			}
 		}
 
 		/// <summary>
